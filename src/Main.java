@@ -28,6 +28,8 @@ public class Main {
                         case 3:
                             listTask(diary);
                             break;
+                        case 4:
+                            listTaskOfDate(scanner, diary);
                         case 0:
                             break label;
                     }
@@ -55,29 +57,21 @@ public class Main {
         System.out.println("Введите дату и время в формате год-мес-день час:мин : ");
         LocalDate dateTask = LocalDate.parse(scanner.next());
         LocalTime timeTask = LocalTime.parse(scanner.next());
-        LocalDateTime startTime = LocalDateTime.of(dateTask, timeTask);
-        diary.addTask(new Task(header,description, taskType, startTime));
         System.out.println("Выберете повторяемость:");
         System.out.println(
                 """
-                        1. - не повторяется,
-                        2. - через день,
-                        3. - через неделю,
-                        4. - через месяц,
-                        5. - через год.
+                        O - не повторяется,
+                        D - через день,
+                        W - через неделю,
+                        M - через месяц,
+                        A - через год.
                         """);
-        int repeatable = scanner.nextInt();
-        Repeatable task = new Task(header,description,taskType,startTime);
-        switch (repeatable) {
-            case 1 -> task.getOneTime();
-            case 2 -> task.getDaily();
-            case 3 -> task.getWeekly();
-            case 4 -> task.getMonthly();
-            case 5 -> task.getAnnual();
-        }
+        Repeat repeat = Repeat.valueOf(scanner.next());
+        LocalDateTime startTime = LocalDateTime.of(dateTask, timeTask);
+        diary.addTask(new Task(header,description, taskType, startTime, repeat));
+
 
     }
-
 
 
     private static void delTask(Scanner scanner, TaskList diary){
@@ -91,13 +85,19 @@ public class Main {
         diary.printTasks();
     }
 
+    private static void listTaskOfDate(Scanner scanner,TaskList diary) {
+        System.out.println("Получить задачи на указанный день: ");
+        LocalDate dateTask = LocalDate.parse(scanner.next());
+        diary.getTaskOfDate(dateTask);
+    }
 
     private static void printMenu() {
         System.out.println(
                 """
                         1. Добавить задачу
                         2. Удалить задачу
-                        3. Получить задачу на указанный день
+                        3. Получить задачи на день
+                        4. Получить задачи на указанный день
                         0. Выход
                         """
         );

@@ -1,6 +1,5 @@
 package Diary;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class Task implements Repeatable {
@@ -9,17 +8,22 @@ public class Task implements Repeatable {
     private String header;
     private String description;
     private final TaskType taskType;
-    private final LocalDateTime startTime;
+    private final Repeat repeat;
+    private LocalDateTime startTime;
 
-    public Task(String header, String description, TaskType taskType, LocalDateTime startTime) throws CantFilledException {
+    public Task(String header, String description, TaskType taskType, LocalDateTime startTime, Repeat repeat) throws CantFilledException {
         setHeader(header);
         setDescription(description);
         this.taskType = taskType;
         this.startTime = startTime;
+        this.repeat = repeat;
         this.id = countId++;
     }
 
 
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
 
     public String getHeader() {
         return header;
@@ -61,32 +65,21 @@ public class Task implements Repeatable {
                 ", описание ='" + description + '\'' +
                 ", тип задачи =" + taskType.getType() +
                 ", дата =" + startTime +
+                ", " + repeat.getName() + nextTime() +
                 '}';
+
     }
 
     @Override
-    public void getOneTime() {
-        System.out.println("Повтор задачи не задан");
+    public Repeat nextTime() {
+        switch (repeat) {
+            case O -> System.out.println(startTime.plusDays(0) + "Повтор задачи не задан");
+            case D -> System.out.println(startTime.plusDays(1) + "- дата повтора задачи");
+            case W -> System.out.println(startTime.plusWeeks(1) + "- дата повтора задачи");
+            case M -> System.out.println(startTime.plusMonths(1) + "- дата повтора задачи");
+            case A -> System.out.println(startTime.plusYears(1) + "- дата повтора задачи");
+        }
+        return repeat;
     }
 
-    @Override
-    public void getDaily() {
-        System.out.println(startTime.plusDays(1) + "- дата повтора задачи");
-    }
-
-    @Override
-    public void getWeekly() {
-        System.out.println(startTime.plusWeeks(1) + "- дата повтора задачи");
-    }
-
-    @Override
-    public void getMonthly() {
-        System.out.println(startTime.plusMonths(1) + "- дата повтора задачи");
-    }
-
-    @Override
-    public void getAnnual() {
-        System.out.println(startTime.plusYears(1) + "- дата повтора задачи");
-
-    }
 }
