@@ -94,7 +94,7 @@ public class Main {
     }
 
     private static void listTask(TaskList diary) {
-        System.out.println("Получить все задачи : ");
+        System.out.println("Получить задачи на день: ");
         diary.printTasks();
     }
 
