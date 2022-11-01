@@ -70,6 +70,9 @@ public class Task implements Repeatable {
                 return startTime.toLocalDate().isEqual(localDate);
 
             case DAILY:
+                while (startTime.toLocalDate().isBefore(localDate)&& !startTime.toLocalDate().isEqual(localDate)){
+                    startTime = startTime.plusDays(1);
+                }
                 return startTime.toLocalDate().isBefore(localDate);
 
             case WEEKLY:
