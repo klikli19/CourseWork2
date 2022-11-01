@@ -1,8 +1,7 @@
 package Diary;
 
 import java.time.LocalDate;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 public class TaskList{
     private final Map<Integer, Task> taskMap;
@@ -11,9 +10,9 @@ public class TaskList{
         this.taskMap = new LinkedHashMap<>();;
     }
 
-    public void addTask(Task task) throws RuntimeException {
+    public void addTask(Task task) {
         if (taskMap.containsKey(task.getId())){
-            throw new RuntimeException("Такая задача есть");
+            System.out.println("Такая задача есть");
         } else {
             taskMap.put(task.getId(), task);
         }
@@ -29,12 +28,16 @@ public class TaskList{
         }
     }
 
-    public void getTaskOfDate(LocalDate localDate) {
-        for (Task value : taskMap.values()) {
-            if (value.getStartTime().toLocalDate().equals(localDate)){
-                System.out.println(value);
+
+    public List<Task>  getTaskOfDate(LocalDate date) {
+        List<Task> list = new ArrayList<>();
+        for (Integer integer : taskMap.keySet()) {
+            if (taskMap.get(integer).nextTime(date)) {
+                list.add(taskMap.get(integer));
             }
         }
+
+        return  list;
     }
 }
 

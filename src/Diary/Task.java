@@ -1,5 +1,6 @@
 package Diary;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class Task implements Repeatable {
@@ -12,8 +13,8 @@ public class Task implements Repeatable {
     private LocalDateTime startTime;
 
     public Task(String header, String description, TaskType taskType, LocalDateTime startTime, Repeat repeat) throws CantFilledException {
-        setHeader(header);
-        setDescription(description);
+        this.header = header;
+        this.description = description;
         this.taskType = taskType;
         this.startTime = startTime;
         this.repeat = repeat;
@@ -29,12 +30,8 @@ public class Task implements Repeatable {
         return header;
     }
 
-    public void setHeader(String header) throws CantFilledException {
-        if (header == null || header.isBlank()) {
-            throw new CantFilledException("Заполните, пожалуйста, заголовок");
-        } else {
+    public void setHeader(String header) {
             this.header = header;
-        }
     }
 
     public String getDescription() {
@@ -45,17 +42,14 @@ public class Task implements Repeatable {
         return id;
     }
 
-    public void setDescription(String description) throws CantFilledException {
-        if (description == null || description.isBlank()) {
-            throw new CantFilledException("В Вашей задаче не заполнено описание");
-        } else {
+    public void setDescription(String description) {
             this.description = description;
-        }
     }
 
     public TaskType getTaskType() {
         return taskType;
     }
+
 
     @Override
     public String toString() {
@@ -65,21 +59,37 @@ public class Task implements Repeatable {
                 ", описание ='" + description + '\'' +
                 ", тип задачи =" + taskType.getType() +
                 ", дата =" + startTime +
-                ", " + repeat.getName() + nextTime() +
+                ", " + repeat.getName() +
                 '}';
 
     }
 
-    @Override
-    public Repeat nextTime() {
+    public boolean nextTime(LocalDate localDate) {
         switch (repeat) {
-            case O -> System.out.println(startTime.plusDays(0) + "Повтор задачи не задан");
-            case D -> System.out.println(startTime.plusDays(1) + "- дата повтора задачи");
-            case W -> System.out.println(startTime.plusWeeks(1) + "- дата повтора задачи");
-            case M -> System.out.println(startTime.plusMonths(1) + "- дата повтора задачи");
-            case A -> System.out.println(startTime.plusYears(1) + "- дата повтора задачи");
-        }
-        return repeat;
-    }
+            case ONE_DAILY:
+                return startTime.toLocalDate().isEqual(localDate);
 
+            case DAILY:
+                return startTime.toLocalDate().isBefore(localDate);
+
+            case WEEKLY:
+                while (startTime.toLocalDate().isBefore(localDate)&& !startTime.toLocalDate().isEqual(localDate)){
+                    startTime = startTime.plusWeeks(1);
+                }
+                return startTime.toLocalDate().isEqual(localDate);
+            case MONTHLY:
+                while (startTime.toLocalDate().isBefore(localDate)&&  !startTime.toLocalDate().isEqual(localDate)){
+                    startTime = startTime.plusMonths(1);
+                }
+                return startTime.toLocalDate().isEqual(localDate);
+            case ANNUALLY:
+                while (startTime.toLocalDate().isBefore(localDate)&& !startTime.toLocalDate().isEqual(localDate)){
+                    startTime = startTime.plusYears(1);
+                }
+                return startTime.toLocalDate().isEqual(localDate);
+            }
+            return false;
+    }
 }
+
+

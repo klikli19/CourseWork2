@@ -8,7 +8,7 @@ import java.util.Scanner;
 
 
 public class Main {
-    public static void main(String[] args) throws CantFilledException {
+    public static void main(String[] args) throws Exception {
         TaskList diary = new TaskList();
 
         try (Scanner scanner = new Scanner(System.in)) {
@@ -30,6 +30,7 @@ public class Main {
                             break;
                         case 4:
                             listTaskOfDate(scanner, diary);
+                            break;
                         case 0:
                             break label;
                     }
@@ -43,41 +44,53 @@ public class Main {
 
 
     private static void inputTask(Scanner scanner, TaskList diary) throws CantFilledException {
-        System.out.print("Введите название задачи: ");
-        String header = scanner.next();
-        System.out.print("Введите описание задачи: ");
-        String description = scanner.next();
-        System.out.print("Выберите тип задачи: \n");
-        System.out.println(
-                """
-                        P - личная,
-                        W - рабочая,
-                        """);
-        TaskType taskType = TaskType.valueOf(scanner.next());
-        System.out.println("Введите дату и время в формате год-мес-день час:мин : ");
-        LocalDate dateTask = LocalDate.parse(scanner.next());
-        LocalTime timeTask = LocalTime.parse(scanner.next());
-        System.out.println("Выберете повторяемость:");
-        System.out.println(
-                """
-                        O - не повторяется,
-                        D - через день,
-                        W - через неделю,
-                        M - через месяц,
-                        A - через год.
-                        """);
-        Repeat repeat = Repeat.valueOf(scanner.next());
-        LocalDateTime startTime = LocalDateTime.of(dateTask, timeTask);
-        diary.addTask(new Task(header,description, taskType, startTime, repeat));
+        try {
+            System.out.print("Введите название задачи: ");
+            String header = scanner.next();
+            scanner.nextLine();
+            System.out.print("Введите описание задачи: ");
+            String description = scanner.nextLine();
+            System.out.print("Выберите тип задачи: \n");
+            System.out.print(
+                    """
+                            1 - личная,
+                            2 - рабочая,
+                            """);
+            int taskTypeNum = scanner.nextInt();
+            TaskType.getConstant(taskTypeNum);
+            System.out.println("Введите дату и время в формате год-мес-день час:мин : ");
+            LocalDate dateTask = LocalDate.parse(scanner.next());
+            LocalTime timeTask = LocalTime.parse(scanner.next());
+            LocalDateTime startTime = LocalDateTime.of(dateTask, timeTask);
+            System.out.print("Выберете повторяемость: \n");
+            System.out.println(
+                    """
+                            1 - не повторяется,
+                            2 - через день,
+                            3 - через неделю,
+                            4 - через месяц,
+                            5 - через год.
+                            """);
+            int numRepeat = scanner.nextInt();
+            Repeat.getConstant(numRepeat);
 
-
+            diary.addTask(new Task(header, description, TaskType.getConstant(taskTypeNum), startTime, Repeat.getConstant(numRepeat)));
+        } catch (CantFilledException e) {
+            System.out.println("Не все заполнено");
+            System.out.println(e.getMessage());
+        }
     }
 
 
-    private static void delTask(Scanner scanner, TaskList diary){
-        System.out.println("Введине номер ID задачи: ");
-        int id = scanner.nextInt();
-        diary.removeTask(id);
+    private static void delTask(Scanner scanner, TaskList diary)throws Exception {
+        try {
+            System.out.println("Введине номер ID задачи: ");
+            int id = scanner.nextInt();
+            diary.removeTask(id);
+        } catch (Exception e) {
+            System.out.println("Неправильно введен ID");
+            System.out.println(e.getMessage());
+        }
     }
 
     private static void listTask(TaskList diary) {
@@ -88,7 +101,8 @@ public class Main {
     private static void listTaskOfDate(Scanner scanner,TaskList diary) {
         System.out.println("Получить задачи на указанный день: ");
         LocalDate dateTask = LocalDate.parse(scanner.next());
-        diary.getTaskOfDate(dateTask);
+        System.out.println(diary.getTaskOfDate(dateTask));
+
     }
 
     private static void printMenu() {

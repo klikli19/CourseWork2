@@ -1,8 +1,10 @@
 package Diary;
 
+import java.time.LocalDate;
+
 public interface Repeatable {
 
-    Repeat nextTime();
+    boolean nextTime(LocalDate localDate);
 
 
 }
